@@ -126,14 +126,26 @@ class start_window(ctk.CTk):
         self.quit()
         self.destroy()
 
+    def center_window(self, window, width, height):
+        x = (400)
+        y = (220)
+        window.geometry(f"{width}x{height}+{x}+{y}")
+
     def error(self, message):
         error_window = ctk.CTkToplevel(self)
         error_window.geometry("300x150")
+        self.center_window(error_window,300,150)
         error_window.title("ERROR")
         error_window.attributes("-topmost", 1)
-        error_window.grab_set()
         error_window.grid_columnconfigure(0, weight=1)
         error_window.grid_rowconfigure(0, weight=1)
+
+        error_window.overrideredirect(True)
+        error_window.resizable(False, False)
+        error_window.protocol("WM_DELETE_WINDOW", lambda: None)
+        error_window.grab_set()
+
+        error_window.bind("<Unmap>", lambda event: error_window.deiconify())
 
         error_window.bind("<Button-1>", lambda event: error_window.destroy())
 
@@ -184,9 +196,13 @@ class ID_window(ctk.CTkToplevel):
         self.action = action
         self.title("Identity Verification")
         self.geometry("400x200")
+        self.center_window(400, 200)
         self.grid_columnconfigure(0, weight=1)
         self.lift()
 
+        self.overrideredirect(True)
+        self.resizable(False, False)
+        self.protocol("WM_DELETE_WINDOW", lambda: None)
         self.grab_set()
 
         self.ID_text = ctk.CTkLabel(self, text="Scan Student ID Card:")
@@ -195,6 +211,7 @@ class ID_window(ctk.CTkToplevel):
         self.ID_entry = ctk.CTkEntry(self)
         self.ID_entry.grid(column=0 ,row=1, columnspan=2)
         self.ID_entry.bind("<Return>", lambda event: self.ID_submit())
+        self.ID_entry.bind("<KP_Enter>", lambda event: self.ID_submit())
         self.after(100, self.ID_entry.focus_set)
 
         self.ID_submit_button = ctk.CTkButton(
@@ -204,6 +221,11 @@ class ID_window(ctk.CTkToplevel):
         self.ID_cancel_button = ctk.CTkButton(
             self, text="Cancel", command=self.cancel, width=100, height=30)
         self.ID_cancel_button.grid(column=0 ,row=2, padx=(60,0), pady=(30,20), sticky="w")
+
+    def center_window(self, width, height):
+        x = (320)
+        y = (190)
+        self.geometry(f"{width}x{height}+{x}+{y}")
 
     def ID_submit(self):
 
@@ -243,6 +265,7 @@ class InFrame(ctk.CTkFrame):
         self.in_tag_entry = ctk.CTkEntry(self, width=140, height=30)
         self.in_tag_entry.grid(column=0, row=0, pady=(20,0))
         self.in_tag_entry.bind("<Return>", self.in_scan_barcode)
+        self.in_tag_entry.bind("<KP_Enter>", self.in_scan_barcode)
 
         self.in_list = ctk.CTkTextbox(self, height=300, width=300, state="disabled")
         self.in_list.grid(row=1, column=0, pady=(40,0))
@@ -354,6 +377,7 @@ class OutFrame(ctk.CTkFrame):
         self.in_tag_entry = ctk.CTkEntry(self, width=140, height=30)
         self.in_tag_entry.grid(column=0, row=0, pady=(20,0))
         self.in_tag_entry.bind("<Return>", self.in_scan_barcode)
+        self.in_tag_entry.bind("<KP_Enter>", self.in_scan_barcode)
 
         self.in_list = ctk.CTkTextbox(self, height=300, width=300, state="disabled")
         self.in_list.grid(row=1, column=0, pady=(40,0))
@@ -464,14 +488,20 @@ class kit_window(ctk.CTkToplevel):
         self.action = action
         self.title("Kit Check-in" if action == "in" else "Kit Check-out")
         self.geometry("400x300")
+        self.center_window(400, 300)
         self.grid_columnconfigure(0, weight=1)
         self.lift()
 
+        self.overrideredirect(True)
+        self.resizable(False, False)
+        self.protocol("WM_DELETE_WINDOW", lambda: None)
+        self.overrideredirect(True)
         self.grab_set()
 
         self.in_tag_entry = ctk.CTkEntry(self, width=140, height=30)
         self.in_tag_entry.grid(column=0, row=0, pady=(20,0))
         self.in_tag_entry.bind("<Return>", self.kit_scan)
+        self.in_tag_entry.bind("<KP_Enter>", self.kit_scan)
         self.after(100, self.in_tag_entry.focus_set)
 
         self.text = ctk.CTkLabel(self, text="Scan in the following items:")
@@ -485,6 +515,10 @@ class kit_window(ctk.CTkToplevel):
 
         self.print_parts()
         
+    def center_window(self, width, height):
+        x = (360)
+        y = (140)
+        self.geometry(f"{width}x{height}+{x}+{y}")
 
     def print_parts(self):
 
@@ -579,9 +613,13 @@ class password_window(ctk.CTkToplevel):
         self.parent = parent
         self.title("Admin Entry Only")
         self.geometry("400x200")
+        self.center_window(400,200)
         self.grid_columnconfigure(0, weight=1)
         self.lift()
 
+        self.resizable(False, False)
+        self.protocol("WM_DELETE_WINDOW", lambda: None)
+        self.overrideredirect(True)
         self.grab_set()
 
         self.text = ctk.CTkLabel(self, text="Input Password:")
@@ -590,6 +628,7 @@ class password_window(ctk.CTkToplevel):
         self.entry = ctk.CTkEntry(self)
         self.entry.grid(column=0 ,row=1, columnspan=2)
         self.entry.bind("<Return>", lambda event: self.submit())
+        self.entry.bind("<KP_Enter>", lambda event: self.submit())
         self.after(100, self.entry.focus_set)
 
         self.submit_button = ctk.CTkButton(
@@ -599,6 +638,11 @@ class password_window(ctk.CTkToplevel):
         self.cancel_button = ctk.CTkButton(
             self, text="Cancel", command=self.cancel, width=100, height=30)
         self.cancel_button.grid(column=0 ,row=2, padx=(60,0), pady=(30,20), sticky="w")
+
+    def center_window(self, width, height):
+        x = (320)
+        y = (190)
+        self.geometry(f"{width}x{height}+{x}+{y}")
 
     def submit(self):
 
